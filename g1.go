@@ -844,3 +844,32 @@ func (g *G1) HashToCurve(msg, domain []byte) (*PointG1, error) {
 	g.ClearCofactor(p0)
 	return g.Affine(p0), nil
 }
+
+func (g *G1) Rand(zBytes, xBytes []byte) *PointG1 {
+	p := &PointG1{}
+	z := new(fe).setBytes(zBytes)
+	z6, bz6 := new(fe), new(fe)
+	square(z6, z)
+	square(z6, z6)
+	mul(z6, z6, z)
+	mul(z6, z6, z)
+	mul(bz6, z6, b)
+	for {
+		x := new(fe).setBytes(xBytes)
+		y := new(fe)
+		square(y, x)
+		mul(y, y, x)
+		add(y, y, bz6)
+		if sqrt(y, y) {
+			p.Set(&PointG1{*x, *y, *z})
+			break
+		}
+	}
+	if !g.IsOnCurve(p) {
+		panic("rand point must be on curve")
+	}
+	if g.InCorrectSubgroup(p) {
+		panic("rand point must be out of correct subgroup")
+	}
+	return p
+}
