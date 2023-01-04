@@ -864,10 +864,12 @@ func (g *G1) Rand(zBytes, xBytes []byte) *PointG1 {
 	}
 	p.Set(&PointG1{*x, *y, *z})
 	if !g.IsOnCurve(p) {
-		panic("rand point must be on curve")
+		//panic("rand point must be on curve")
+		return nil
 	}
 	if g.InCorrectSubgroup(p) {
-		panic("rand point must be out of correct subgroup")
+		//panic("rand point must be out of correct subgroup")
+		return nil
 	}
 	return p
 }
