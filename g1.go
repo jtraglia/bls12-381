@@ -854,17 +854,15 @@ func (g *G1) Rand(zBytes, xBytes []byte) *PointG1 {
 	mul(z6, z6, z)
 	mul(z6, z6, z)
 	mul(bz6, z6, b)
-	for {
-		x := new(fe).setBytes(xBytes)
-		y := new(fe)
-		square(y, x)
-		mul(y, y, x)
-		add(y, y, bz6)
-		if sqrt(y, y) {
-			p.Set(&PointG1{*x, *y, *z})
-			break
-		}
+	x := new(fe).setBytes(xBytes)
+	y := new(fe)
+	square(y, x)
+	mul(y, y, x)
+	add(y, y, bz6)
+	if !sqrt(y, y) {
+		return nil
 	}
+	p.Set(&PointG1{*x, *y, *z})
 	if !g.IsOnCurve(p) {
 		panic("rand point must be on curve")
 	}
