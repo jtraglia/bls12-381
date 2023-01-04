@@ -871,3 +871,11 @@ func (g *G1) Rand(zBytes, xBytes []byte) *PointG1 {
 	}
 	return p
 }
+
+func (g *G1) RandCorrect(zBytes, xBytes []byte) *PointG1 {
+	p := g.ClearCofactor(g.Rand(zBytes, xBytes))
+	if !g.InCorrectSubgroup(p) {
+		panic("must be in correct subgroup")
+	}
+	return p
+}
